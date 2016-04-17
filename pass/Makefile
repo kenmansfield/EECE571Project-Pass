@@ -1,0 +1,51 @@
+#LEVEL = ..
+
+## change or use make INPUT=inputfilename
+TARGET=$(INPUT)
+
+## replace LLVMROOT and CLANG as appropriate
+
+LLVMROOT = ~/llvm-3.7.1-build
+CLANG = ~/clang-3.7.1-build/bin/clang
+
+LLVMAS  = $(LLVMROOT)/bin/llvm-as
+LLVMDIS = $(LLVMROOT)/bin/llvm-dis
+LLVMOPT = $(LLVMROOT)/bin/opt
+LLVMLLC = $(LLVMROOT)/bin/llc
+
+
+## change library name appropriately for your system
+DYLIB   = $(LLVMROOT)/lib/EECE571Project.so
+
+
+default: debug
+
+testsimple: debug
+
+debug: $(TARGET).debug.bc
+
+
+.PRECIOUS: %.ll
+
+
+%.ll: %.bc
+	$(LLVMDIS) -f $<
+
+
+%.llvm.bc: %.c
+	$(CLANG) -S -emit-llvm -o - $< | $(LLVMAS) > $@
+
+
+%.debug.bc: %.llvm.bc
+	$(LLVMOPT) -load $(DYLIB) -CodePerforationPass -o $@ $<
+	$(LLVMLLC) $@
+	gcc $(INPUT).debug.s -o $(INPUT).op
+#	$(LLVMOPT) -load $(DYLIB) -loop-simplify -CodePerforationPass -S -o helloPerf $<  
+
+
+#	$(LLVMOPT) -load $(DYLIB) -stats -loop-simplify -scalarrepl-assn2 -S -o $@ $<	
+#	$(LLVMOPT) -load $(DYLIB) -stats -scalarrepl-assn2 -instcombine -mem2reg -inline -globaldce -sccp -dce -simplifycfg -S > $@
+#	$(LLVMOPT) -load $(DYLIB) -stats -scalarrepl-assn2 -S -o $@ $<	
+
+clean:
+	$(RM) -f *.debug.bc *.llvm.bc *.s *.op
