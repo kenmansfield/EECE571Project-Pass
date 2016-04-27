@@ -22,7 +22,7 @@ default: debug
 
 testsimple: debug
 
-debug: $(TARGET).debug.bc
+debug: $(TARGET).bc
 
 
 .PRECIOUS: %.ll
@@ -36,16 +36,14 @@ debug: $(TARGET).debug.bc
 	$(CLANG) -S -emit-llvm -o - $< | $(LLVMAS) > $@
 
 
-%.debug.bc: %.llvm.bc
+%.bc: %.llvm.bc
 	$(LLVMOPT) -load $(DYLIB) -CodePerforationPass -o $@ $<
-	$(LLVMLLC) $@
-	gcc $(INPUT).debug.s -o $(INPUT).op
+	$(LLVMLLC) $@.bc
+	gcc *.s -o $(INPUT).op
 #	$(LLVMOPT) -load $(DYLIB) -loop-simplify -CodePerforationPass -S -o helloPerf $<  
 
 
-#	$(LLVMOPT) -load $(DYLIB) -stats -loop-simplify -scalarrepl-assn2 -S -o $@ $<	
-#	$(LLVMOPT) -load $(DYLIB) -stats -scalarrepl-assn2 -instcombine -mem2reg -inline -globaldce -sccp -dce -simplifycfg -S > $@
-#	$(LLVMOPT) -load $(DYLIB) -stats -scalarrepl-assn2 -S -o $@ $<	
+	
 
 clean:
-	$(RM) -f *.debug.bc *.llvm.bc *.s *.op
+	$(RM) -f *.debug.bc *.bc *.s *.op
