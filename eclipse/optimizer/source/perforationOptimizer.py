@@ -8,7 +8,6 @@ import subprocess
 import imp
 import os
 import time
-import itertools
 import numpy
 import copy
 
@@ -64,16 +63,10 @@ def loadModule(appInfo):
     for item in loopInfo:
         optimizeList.append(item[1])
             
+    #50% perforation        
     doOneAtATime(command, appInfo, passDir, fullPath, optimizeList, 1, origTime)
-    
+    #66% perforation
     doOneAtATime(command, appInfo, passDir, fullPath, optimizeList, 2, origTime)
-    #for item in premList:
-    #        if item[1] != -1:
-    #            item[1] += 1
-    #            optimize(command, appInfo, passDir, fullPath, premList)
-    
-#     for premLoop in premList:
-#         optimize(command, appInfo, passDir, fullPath, premLoop)
         
 def doOneAtATime(command, appInfo, passDir, fullPath, optimizeList, perfFactor, origTime):
     previousSet = copy.deepcopy(optimizeList)
@@ -141,21 +134,23 @@ def mainEntry():
     #passDir='../../../pass/'
     print 'Number of arguments:', len(sys.argv), 'arguments.'
     print 'Argument List:', str(sys.argv)
-    #subprocess.call('echo $HOME', shell=True)
-    #subprocess.call(['make', 'clean'], cwd=passDir)
-    #subprocess.call(['make', 'INPUT=trivial'], cwd=passDir)
     
-    #loadModule(blackScholes)
-    loadModule(fluidanimate)
+    progStart = time.time()
+    
+    # uncomments a line below to perform that test.
+    loadModule(blackScholes)
+    #loadModule(canneal)
+    #loadModule(fluidanimate)
     
     
     print "\n\n***Final results below***\n\n"
-    #print ', '.join(finalResults)
-    #print("\t ", finalResults, end='')
-    #print('\t'.join(map(str, finalResults)))
+
     for a in finalResults:
         print ', '.join(str(x) for x in a)
-    #print finalResults
+        
+    progtime = time.time() - progStart
+    print "\n***Total Time"
+    print progtime
 
 if __name__ == '__main__':
     mainEntry()

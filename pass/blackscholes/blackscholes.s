@@ -590,7 +590,7 @@ main:                                   # @main
 	movss	20(%rcx,%rdx,4), %xmm0  # xmm0 = mem[0],zero,zero,zero
 	movq	otime(%rip), %rcx
 	movss	%xmm0, (%rcx,%rax,4)
-	addl	$2, -44(%rbp)
+	addl	$3, -44(%rbp)
 .LBB3_20:                               # =>This Inner Loop Header: Depth=1
 	movl	-44(%rbp), %eax
 	cmpl	numOptions(%rip), %eax
